@@ -18,16 +18,21 @@ void gaussian_blur(Mat& frame, Mat& gaussianBlur, int num)
 	if (count == 0)
 		num = num + 1;
 
+	//Applying Gaussian Blur
 	GaussianBlur(frame, gaussianBlur, Size(num, num), 0);
 	imshow("Gaussian Blur", gaussianBlur);
 }
 
-void canny_detector(Mat& frame, Mat& cannyDetector, int num)
+void canny_detector(Mat& frame, Mat& cannyDetector, Mat& blurBeforeCanny, int num)
 {
-	//Should I filter the noise with a gaussian blur before?
 	int lowThreshold = num;
 	int lowThresholdRatio = num * 3;
-	Canny(frame, cannyDetector, lowThreshold, lowThresholdRatio, 3);
+
+	//Applying Gaussian Blur to filter noise
+	GaussianBlur(frame, blurBeforeCanny, Size(11, 11), 0);
+
+	//Applying Canny Detector
+	Canny(blurBeforeCanny, cannyDetector, lowThreshold, lowThresholdRatio, 3);
 	imshow("Canny", cannyDetector);
 }
 
@@ -35,6 +40,7 @@ int main()
 {
 	Mat gaussianBlur;
 	Mat cannyDetector;
+	Mat blurBeforeCanny;
 	VideoCapture cap = VideoCapture(1);
 
 	if (!cap.isOpened()) return -1;
@@ -52,7 +58,7 @@ int main()
 	for (;;)
 	{
 		Mat frame;
-		cap >> frame; // get a new frame from camera
+		cap >> frame; 
 		//cvtColor(frame, edges, COLOR_BGR2GRAY);
 		//Canny(edges, edges, num, 30, 3);
 
@@ -61,7 +67,7 @@ int main()
 
 		int num = g_slider;
 		gaussian_blur(frame, gaussianBlur, num);
-		canny_detector(frame, cannyDetector, num);
+		canny_detector(frame, cannyDetector, blurBeforeCanny, num);
 
 		if (waitKey(1) == 27) break;
 		//if (waitKey(30) >= 0)
