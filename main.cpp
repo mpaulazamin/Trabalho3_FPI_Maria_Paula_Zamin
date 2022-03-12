@@ -1,4 +1,6 @@
 #include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 
 using namespace cv;
@@ -12,12 +14,19 @@ int main(int argc, char** argv)
     // Check VideoCapture documentation.
     if (!cap.open(camera))
         return 0;
+
     for (;;)
     {
         Mat frame;
         cap >> frame;
         if (frame.empty()) break; // end of video stream
-        imshow("This is you, smile! :)", frame);
+
+        namedWindow("Original frame", WINDOW_AUTOSIZE);
+        namedWindow("Processed frame", WINDOW_AUTOSIZE);
+
+        imshow("Original frame", frame);
+        imshow("Processed frame", frame);
+
         if (waitKey(1) == 27) break; // stop capturing by pressing ESC
     }
     cap.release();  // release the VideoCapture object
