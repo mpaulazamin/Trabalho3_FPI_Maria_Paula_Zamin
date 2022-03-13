@@ -41,8 +41,24 @@ void canny_detector(Mat& frame, Mat& cannyDetector, Mat& blurBeforeCanny, int nu
 	video.write(cannyDetector);
 }
 
-void sobel_filter(Mat& frame, Mat& sobelFilter, int num, VideoWriter& video)
+void sobel_filter(Mat& frame, Mat& sobelFilter, int ksize, int dx, int dy, VideoWriter& video)
 {
+	// Convert to graycsale
+	Mat frameGray;
+	cvtColor(frame, frameGray, COLOR_BGR2GRAY);
+	
+	// Blur the image for better edge detection
+	Mat frameBlur;
+	GaussianBlur(frameGray, frameBlur, Size(3, 3), 0);
+
+	// If dx=1 and dy=0, computes the 1st derivative Sobel image in the x-direction
+	// If dx=0 and dy=1, computes the 1st derivative Sobel image in the y-direction
+	// If both dx = 1 and dy = 1, computes the 1st derivative Sobel image in both directions
+	Sobel(frameBlur, sobelFilter, CV_16S, dx, dy, ksize);
+	// Sobel(frameBlur, sobelFilter, CV_64F, dx, dy, ksize);
+	imshow("Sobel", sobelFilter);
+
+	video.write(sobelFilter);
 
 }
 
@@ -142,7 +158,7 @@ int main()
 	int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
 	int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
-	VideoWriter video("C://Users//Maria Paula//teste.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 10, Size(frame_width, frame_height));
+	VideoWriter video("C://Users//Maria Paula//record.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 10, Size(frame_width, frame_height));
 
 	g_slider = 0;
 	g_slider_max = 255;
@@ -152,19 +168,18 @@ int main()
 	//namedWindow("Gaussian Blur", 1);
 	//namedWindow("Canny", 1);
 	//namedWindow("Sobel", 1);
-	namedWindow("Brightness", 1);
+	//namedWindow("Brightness", 1);
 	//namedWindow("Contrast", 1);
 	//namedWindow("Negative frame", 1);
 	//namedWindow("Grayscale frame", 1);
-	//namedWindow("Rotated frame", 1);
+	namedWindow("Rotated frame", 1);
 	//namedWindow("Flipped frame", 1);
 	//namedWindow("Resized frame", 1);
 
 	//Makes trackbar
 	//createTrackbar("TrackbarGB", "Gaussian Blur", &g_slider, g_slider_max, on_trackbar);
 	//createTrackbar("TrackbarCanny", "Canny", &g_slider, g_slider_max, on_trackbar);
-	//createTrackbar("TrackbarSobel", "Sobel", &g_slider, g_slider_max, on_trackbar);
-	createTrackbar("TrackbarBright", "Brightness", &g_slider, g_slider_max, on_trackbar);
+	//createTrackbar("TrackbarBright", "Brightness", &g_slider, g_slider_max, on_trackbar);
 	//createTrackbar("TrackbarContrast", "Contrast", &g_slider, g_slider_max_contrast, on_trackbar);
 
 	for (;;)
@@ -176,6 +191,9 @@ int main()
 		imshow("Original frame", frame);
 
 		int num = g_slider;
+		int ksize = 5;
+		int dx = 0;
+		int dy = 1;
 		int direction = +90;
 		int flipping = 0;
 		int width = frame.size().width;
@@ -185,12 +203,12 @@ int main()
 
 		//gaussian_blur(frame, gaussianBlur, num, video);
 		//canny_detector(frame, cannyDetector, blurBeforeCanny, num, video);
-		//sobel_filter(frame, sobelFilter, num, video);
-		change_bright(frame, changedBright, num, video);
+		//sobel_filter(frame, sobelFilter, ksize, dx, dy, video);
+		//change_bright(frame, changedBright, num, video);
 		//change_contrast(frame, changedContrast, num, video);
 		//change_negative(frame, changedNegative, video);
 		//grayscale(frame, changedGrayscale, video);
-		//rotate_frame(frame, rotatedFrame, direction);
+		rotate_frame(frame, rotatedFrame, direction);
 		//flip_frame(frame, flippedFrame, flipping, video);
 		//resize_frame(frame, resizedFrame, newWidth, newHeight);
 
