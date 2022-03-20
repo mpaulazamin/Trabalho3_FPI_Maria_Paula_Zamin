@@ -124,14 +124,14 @@ void change_negative(Mat& frame, Mat& changedNegative, VideoWriter& video_negati
 	video_negative.write(changedNegative);
 }
 
-void grayscale(Mat& frame, Mat& changedGrayscale, VideoWriter& video_grayscale)
+void grayscale(Mat& frame, Mat& changedGrayscale, VideoWriter& video_gray)
 {
 	//Converts original frame to grayscale
 	cvtColor(frame, changedGrayscale, COLOR_BGR2GRAY);
 	imshow("Grayscale frame", changedGrayscale);
 
 	//Records video
-	video_grayscale.write(changedGrayscale);
+	video_gray.write(changedGrayscale);
 }
 
 void rotate_frame(Mat& frame, Mat& rotatedFrame, int direction)
@@ -201,14 +201,17 @@ int main()
 	int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
 	//Creates VideoWriter objects to records the results
+	//Please, comment the functions you are not going to use
+	//Change the address to save the videos on your own computer
 	VideoWriter video_gaussian("C://Users//Maria Paula//video_gaussian.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
 	VideoWriter video_canny("C://Users//Maria Paula//video_canny.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
 	VideoWriter video_sobel("C://Users//Maria Paula//video_sobel.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
 	VideoWriter video_bright("C://Users//Maria Paula//video_bright.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
 	VideoWriter video_contrast("C://Users//Maria Paula//video_contrast.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
 	VideoWriter video_negative("C://Users//Maria Paula//video_negative.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
-	VideoWriter video_grayscale("C://Users//Maria Paula//video_grayscale.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
-	VideoWriter video_flipped("C://Users//Maria Paula//video_flipped.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
+	VideoWriter video_gray("C://Users//Maria Paula//video_gray.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
+	VideoWriter video_flipped_x("C://Users//Maria Paula//video_flipped_x.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
+	VideoWriter video_flipped_y("C://Users//Maria Paula//video_flipped_y.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame_width, frame_height));
 
 	//Setting values for the values of the trackbars
 	g_slider = 0;
@@ -216,22 +219,24 @@ int main()
 	g_slider_max_contrast = 10;
 
 	//Creates windows to show the frames
-	//namedWindow("Gaussian Blur", 1);
-	//namedWindow("Canny", 1);
-	//namedWindow("Sobel", 1);
-	//namedWindow("Brightness", 1);
-	//namedWindow("Contrast", 1);
-	//namedWindow("Negative frame", 1);
-	//namedWindow("Grayscale frame", 1);
-	//namedWindow("Rotated frame", 1);
-	//namedWindow("Flipped frame", 1);
-	//namedWindow("Resized frame", 1);
+	//Please, comment the functions you are not going to use
+	namedWindow("Gaussian Blur", 1);
+	namedWindow("Canny", 1);
+	namedWindow("Sobel", 1);
+	namedWindow("Brightness", 1);
+	namedWindow("Contrast", 1);
+	namedWindow("Negative frame", 1);
+	namedWindow("Grayscale frame", 1);
+	namedWindow("Rotated frame", 1);
+	namedWindow("Flipped frame", 1);
+	namedWindow("Resized frame", 1);
 
 	//Creates trackbars
-	//createTrackbar("TrackbarGB", "Gaussian Blur", &g_slider, g_slider_max, on_trackbar);
-	//createTrackbar("TrackbarCanny", "Canny", &g_slider, g_slider_max, on_trackbar);
-	//createTrackbar("TrackbarBright", "Brightness", &g_slider, g_slider_max, on_trackbar);
-	//createTrackbar("TrackbarContrast", "Contrast", &g_slider, g_slider_max_contrast, on_trackbar);
+	//Please, comment the functions you are not going to use
+	createTrackbar("TrackbarGB", "Gaussian Blur", &g_slider, g_slider_max, on_trackbar);
+	createTrackbar("TrackbarCanny", "Canny", &g_slider, g_slider_max, on_trackbar);
+	createTrackbar("TrackbarBright", "Brightness", &g_slider, g_slider_max, on_trackbar);
+	createTrackbar("TrackbarContrast", "Contrast", &g_slider, g_slider_max_contrast, on_trackbar);
 
 	for (;;)
 	{
@@ -250,7 +255,7 @@ int main()
 		//If dx = 1 and dy = 0, computes the first derivative Sobel in the x-direction
 		//If dx = 0 and dy = 1, computes the first derivative Sobel in the y-direction
 		//If dx = 1 and dy = 1, computes the first derivative in both directions
-		int dx = 0;
+		int dx = 1;
 		int dy = 1;
 
 		//Direction for rotating the image
@@ -262,7 +267,7 @@ int main()
 		//Type of flipping
 		//If flipping = 0,flips the frame over the x-axis
 		//If flipping = 1, flips the frame over the y-axis
-		int flipping = 0;
+		int flipping = 1;
 
 		//Gets the width and height of the frame
 		int width = frame.size().width;
@@ -273,24 +278,25 @@ int main()
 		int newHeight = round(height / 2);
 
 		//Functions to perform operations on the frames and show the results
-		//gaussian_blur(frame, gaussianBlur, num, video_gaussian);
-		//canny_detector(frame, cannyDetector, preprocessedCanny, num, video_canny);
-		//sobel_filter(frame, sobelFilter, ksize, dx, dy, video_sobel);
-		//change_bright(frame, changedBright, num, video_bright);
-		//change_contrast(frame, changedContrast, num, video_contrast);
-		//change_negative(frame, changedNegative, video_negative);
-		//grayscale(frame, changedGrayscale, video_grayscale);
-		//rotate_frame(frame, rotatedFrame, direction);
-		//flip_frame(frame, flippedFrame, flipping, video_flipped);
-		//resize_frame(frame, resizedFrame, newWidth, newHeight);
+		//Please, comment the functions you are not going to use
+		gaussian_blur(frame, gaussianBlur, num, video_gaussian);
+		canny_detector(frame, cannyDetector, preprocessedCanny, num, video_canny);
+		sobel_filter(frame, sobelFilter, preprocessedSobel, dx, dy, video_sobel);
+		change_bright(frame, changedBright, num, video_bright);
+		change_contrast(frame, changedContrast, num, video_contrast);
+		change_negative(frame, changedNegative, video_negative);
+		grayscale(frame, changedGrayscale, video_gray);
+		rotate_frame(frame, rotatedFrame, direction);
+		flip_frame(frame, flippedFrame, flipping, video_flipped_x);
+		flip_frame(frame, flippedFrame, flipping, video_flipped_y);
+		resize_frame(frame, resizedFrame, newWidth, newHeight);
 
 		//Stops executing
 		if (waitKey(1) == 27) break;
-		//if (waitKey(30) >= 0)
-		//	break;
 	}
 
 	//Releases captures and videos
+	//Please, comment the functions you are not going to use
 	cap.release();
 	video_gaussian.release();
 	video_canny.release();
@@ -298,8 +304,9 @@ int main()
 	video_bright.release();
 	video_contrast.release();
 	video_negative.release();
-	video_grayscale.release();
-	video_flipped.release();
+	video_gray.release();
+	video_flipped_x.release();
+	video_flipped_y.release();
 
 	//Destroy the windows created
 	destroyAllWindows();
